@@ -20,25 +20,37 @@ class QuantitySpec extends Specification {
         -1            | _
     }
 
-    def "applying quantity should return false if given quantity is greater than 0 but does not fall between allowed quantity"() {
+    def "quantity should be applicable when its greater than or equal to minimum quantity and max is big enough"() {
         given:
-        Quantity quantity = new Quantity(2)
+        Quantity quantity = new Quantity(minQuantity)
 
         when:
-        def quantityApplicable = quantity.appliesTo(1)
+        def quantityApplicable = quantity.appliesTo(itemQuantity)
 
         then:
-        !quantityApplicable
+        quantityApplicable == isApplicable
+
+        where:
+        minQuantity | itemQuantity | isApplicable
+        2           | 1            | false
+        2           | 3            | true
+        2           | 2            | true
     }
 
-    def "applying quantity should return true if given quantity is greater than 0 and falls between allowed quantity"() {
+    def "applying quantity should return true if given quantity falls between given min quantity and max quantity"() {
         given:
-        Quantity quantity = new Quantity(2)
+        Quantity quantity = new Quantity(minQuantity, maxQuantity)
 
         when:
-        def quantityApplicable = quantity.appliesTo(3)
+        def quantityApplicable = quantity.appliesTo(itemQuantity)
 
         then:
-        quantityApplicable
+        quantityApplicable == isApplicable
+
+        where:
+        minQuantity | maxQuantity | itemQuantity | isApplicable
+        2           | 4           | 3            | true
+        2           | 2           | 2            | true
+        2           | 2           | 3            | false
     }
 }

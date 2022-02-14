@@ -15,15 +15,7 @@ public class Quantity {
         this.maxQuantity = Integer.MAX_VALUE;
     }
 
-    public Integer getMinQuantity() {
-        return minQuantity;
-    }
-
-    public Integer getMaxQuantity() {
-        return maxQuantity;
-    }
-
     public boolean appliesTo(int quantity) {
-        return quantity > minQuantity;
+        return quantity >= minQuantity && quantity <= maxQuantity;
     }
 }
