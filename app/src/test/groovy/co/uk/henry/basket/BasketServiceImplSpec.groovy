@@ -38,4 +38,31 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         0        | _
         -1       | _
     }
+
+    def "An empty basket can be retrieved"() {
+        given: "no items are added to the basket"
+
+        when: "basket is retrieved"
+        def basket = basketService.getBasket()
+
+        then: "basket is empty"
+        basket.items == []
+    }
+
+    def "An item can be added to the basket and retrieved successfully with its price"() {
+        given: "an item exists"
+        Item item = new Item("itemCode", "itemName", Unit.SINGLE, 10.0)
+
+        when: "an item is added to the basket"
+        basketService.add(item, 1)
+
+        and: "basket is retrieved"
+        def basket = basketService.getBasket()
+
+        then: "item exists in the basket"
+        basket.items == [item]
+
+        and: "price for quantity 1 is as expected"
+        basket.totalCost == 10.0
+    }
 }
