@@ -18,7 +18,6 @@ class BasketServiceSpec extends Specification {
     void setup() {
         promotionService = Mock(PromotionService)
         basketService = new BasketServiceImpl(promotionService)
-
     }
 
     def "A null item cannot be added to the basket"() {
@@ -76,7 +75,7 @@ class BasketServiceSpec extends Specification {
         basket.items == [item]
 
         and: "price for quantity 1 is as expected"
-        basket.totalCost == 10.0
+        basket.totalCost == 10.0D
     }
 
     def 'Multiple items of quantity 1 each can be added to the basket and retrieved successfully with its total cost'() {
@@ -95,7 +94,7 @@ class BasketServiceSpec extends Specification {
         basket.items == [item1, item2]
 
         and: "price for given quantities is as expected"
-        basket.totalCost == 15.50
+        basket.totalCost == 15.50D
     }
 
     def "An item with multiple quantity can be added and its basket cost retrieved successfully"() {
@@ -112,7 +111,24 @@ class BasketServiceSpec extends Specification {
         basket.items == [item]
 
         and: "price for quantity 1 is as expected"
-        basket.totalCost == 50.0
+        basket.totalCost == 50.0D
+    }
+
+    def "given Basket period is added correctly to the date passed to PromotionService"() {
+        given: "an item exists"
+        Item item = new Item("itemCode", "itemName", Unit.SINGLE, 10.0)
+
+        and:"a day for basket"
+        def basketPeriod = Period.parse("P2D")
+
+        when: "it is added to the basket"
+        basketService.add(item, 2)
+
+        and: "basket is retrieved"
+        def basket = basketService.getBasketFor(basketPeriod)
+
+        then: "item exists in the basket"
+        1 * promotionService.getApplicableTotalDiscountFor([new BasketItem(item, 2)], LocalDate.now().plusDays(2)) >> 1.0
     }
 
     def "Promotion is applied to the basket when discount is returned for the items"() {
@@ -132,6 +148,6 @@ class BasketServiceSpec extends Specification {
         basket.items == [item]
 
         and: "price for quantity with discount deducted"
-        basket.totalCost == 19.0
+        basket.totalCost == 19.0D
     }
 }

@@ -4,6 +4,7 @@ import co.uk.henry.basket.BasketService
 import co.uk.henry.product.ProductService
 import spock.lang.Specification
 
+import java.text.DecimalFormat
 import java.time.Period
 
 class UserBasketIntegrationSpec extends Specification {
@@ -29,12 +30,14 @@ class UserBasketIntegrationSpec extends Specification {
         when: "the chosen item has been added to the basket"
         basketService.add(item, 1)
 
-        then: "basket reflects the added item"
+        and: "basket retrieved today"
         def basket = basketService.getBasketFor(Period.ofDays(0))
+
+        then: "basket reflects the added item"
         basket.items == [item]
 
         and: "the total cost"
-        basket.totalCost == item.price
+        basket.totalCost == truncatedToTwoDecimalPlaces(item.price)
     }
 
     def "Multiple items can be added to the user's basket and their total price retrieved"() {
@@ -49,12 +52,14 @@ class UserBasketIntegrationSpec extends Specification {
         basketService.add(item1, 1)
         basketService.add(item2, 1)
 
-        then: "basket reflects the added item"
+        and: "basket retrieved today"
         def basket = basketService.getBasketFor(Period.ofDays(0))
+
+        then: "basket reflects the added item"
         basket.items == [item1, item2]
 
         and: "the total cost"
-        basket.totalCost == item1.price + item2.price
+        basket.totalCost == truncatedToTwoDecimalPlaces(item1.price + item2.price)
     }
 
     def "Multiple items can be added with multiple quantities to the user's basket and their total price retrieved"() {
@@ -69,14 +74,15 @@ class UserBasketIntegrationSpec extends Specification {
         basketService.add(item1, 2)
         basketService.add(item2, 3)
 
-        then: "basket reflects the added item"
+        and: "basket retrieved today"
         def basket = basketService.getBasketFor(Period.ofDays(0))
+
+        then: "basket reflects the added item"
         basket.items == [item1, item2]
 
         and: "the total cost"
-        basket.totalCost ==( 2 * item1.price + 3 * item2.price)
+        basket.totalCost == truncatedToTwoDecimalPlaces(2 * item1.price + 3 * item2.price)
     }
-
     def "Apples have 10% discount applied when added to the basket for the applicable date"() {
         given: "All available products"
         def items = productService.getItems()
@@ -87,14 +93,15 @@ class UserBasketIntegrationSpec extends Specification {
         when: "5 apples are added to the basket"
         basketService.add(apples, 5)
 
+        and:"basket fetched in 4 days time"
+        def basket = basketService.getBasketFor(Period.ofDays(4))
+
         then: "basket reflects the added item"
-        def basket = basketService.getBasketFor(Period.ofDays(0))
         basket.items == [apples]
 
         and: "the total cost"
-        basket.totalCost == 0.45
+        basket.totalCost == 0.45D
     }
-    // TODO - test for outside date
 
     def "loaves of bread are half price when two tins of soup are bought for the applicable date"() {
         given: "All available products"
@@ -117,6 +124,12 @@ class UserBasketIntegrationSpec extends Specification {
         basket.items == [soup, bread]
 
         and: "the total cost with 50% discount on loaf of bread"
-        basket.totalCost == 1.70
+        basket.totalCost == 1.70D
     }
+    // TODO - test for outside date
+
+    private double truncatedToTwoDecimalPlaces(double price) {
+        Double.parseDouble(new DecimalFormat("#.##").format(price))
+    }
+
 }

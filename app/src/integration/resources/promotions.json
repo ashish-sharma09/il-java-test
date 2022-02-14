@@ -21,8 +21,8 @@
 		"type": "MAIN",
 		"item": "1",
 		"quantity": {
-			"minQuantity": 1,
-			"maxQuantity": 1
+			"minQuantity": 2,
+			"maxQuantity": 2
 		},
 		"validityPeriod": {
 			"validFrom": "-P1D",

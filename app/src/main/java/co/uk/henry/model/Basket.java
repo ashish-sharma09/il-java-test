@@ -5,16 +5,16 @@ import java.util.Collection;
 
 public class Basket {
     private final Collection<Item> items;
-    private final Double totalCost;
+    private final double totalCost;
     private final LocalDate localDate;
 
-    public Basket(final Collection<Item> items, final Double totalCost) {
+    public Basket(final Collection<Item> items, final double totalCost) {
         this.items = items;
         this.totalCost = totalCost;
         this.localDate = LocalDate.now();
     }
 
-    public Basket(final Collection<Item> items, final Double totalCost, final LocalDate localDate) {
+    public Basket(final Collection<Item> items, final double totalCost, final LocalDate localDate) {
         this.items = items;
         this.totalCost = totalCost;
         this.localDate = localDate;
@@ -24,7 +24,7 @@ public class Basket {
         return items;
     }
 
-    public Double getTotalCost() {
+    public double getTotalCost() {
         return totalCost;
     }
 
