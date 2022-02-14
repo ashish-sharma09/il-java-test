@@ -30,7 +30,7 @@ class ValidityPeriodSpec extends Specification {
     }
 
     def "true when given date starts today and validity is from yesterday"() {
-        given: "period with validity of 5 days"
+        given: "period with validity of 7 days"
         ValidityPeriod validityPeriod = new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
 
         when:
@@ -41,7 +41,7 @@ class ValidityPeriodSpec extends Specification {
     }
 
     def "true when given date is next month and validity is from 3 days to end of next month"() {
-        given: "period with validity of 5 days"
+        given: "period with validity starting from 3 days to end of next month"
         ValidityPeriod validityPeriod = new ValidityPeriod(Period.parse("P3D"), Period.parse("P1M"))
 
         when:
@@ -49,5 +49,16 @@ class ValidityPeriodSpec extends Specification {
 
         then:
         isValid
+    }
+
+    def "true when given date is in 2 months and validity is from 3 days to end of next month"() {
+        given: "period with validity starting from 3 days to end of next month"
+        ValidityPeriod validityPeriod = new ValidityPeriod(Period.parse("P3D"), Period.parse("P1M"))
+
+        when:
+        def isValid = validityPeriod.isValidFor(LocalDate.now().plusMonths(2))
+
+        then:
+        !isValid
     }
 }

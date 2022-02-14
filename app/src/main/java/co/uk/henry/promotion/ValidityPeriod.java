@@ -2,6 +2,7 @@ package co.uk.henry.promotion;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.TemporalAdjusters;
 
 public class ValidityPeriod {
 
@@ -15,12 +16,16 @@ public class ValidityPeriod {
 
     public boolean isValidFor(final LocalDate date) {
         return
-                date.isAfter(toDate(validFrom.minusDays(1).minusMonths(1)))
+                date.isAfter(toDate(validFrom.minusDays(1)))
                         &&
-                        date.isBefore(toDate(validTo.plusDays(1).plusMonths(1)));
+                        date.isBefore(toDate(validTo.plusDays(1)));
     }
 
     private LocalDate toDate(Period period) {
-        return LocalDate.now().plusDays(period.getDays()).plusMonths(period.getMonths());
+        final LocalDate localDate = LocalDate.now().plusDays(period.getDays());
+        if (period.getMonths() != 0) {
+            return localDate.plusMonths(period.getMonths()).with(TemporalAdjusters.lastDayOfMonth());
+        }
+        return localDate;
     }
 }
