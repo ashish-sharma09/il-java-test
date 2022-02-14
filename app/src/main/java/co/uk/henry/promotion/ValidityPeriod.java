@@ -6,7 +6,7 @@ import java.time.temporal.TemporalAdjusters;
 
 public class ValidityPeriod {
 
-    public static ValidityPeriod FOREVER = new ValidityPeriod(Period.ZERO, Period.ofYears(Integer.MAX_VALUE));
+    public static ValidityPeriod FOREVER = new ValidityPeriod(Period.ZERO, Period.ofYears(100));
 
     private final Period validFrom;
     private final Period validTo;
@@ -24,7 +24,11 @@ public class ValidityPeriod {
     }
 
     private LocalDate toDate(Period period) {
-        final LocalDate localDate = LocalDate.now().plusDays(period.getDays());
+        final LocalDate localDate =
+                LocalDate.now()
+                        .plusDays(period.getDays())
+                        .plusYears(period.getYears());
+
         if (period.getMonths() != 0) {
             return localDate.plusMonths(period.getMonths()).with(TemporalAdjusters.lastDayOfMonth());
         }
