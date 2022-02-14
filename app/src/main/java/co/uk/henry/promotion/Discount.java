@@ -1,20 +1,24 @@
 package co.uk.henry.promotion;
 
 public class Discount {
+    private final DiscountType type;
+    private final String code;
     private final DiscountUnit discountUnit;
     private final double amount;
 
-    public Discount(DiscountUnit discountUnit, double amount) {
+    public Discount(DiscountType type, DiscountUnit discountUnit, double amount) {
+        this(type, null, discountUnit, amount);
+    }
+
+    public Discount(DiscountType type, String code) {
+        this(type, code, null, 0.0);
+    }
+
+    private Discount(DiscountType type, String code, DiscountUnit discountUnit, double amount) {
+        this.type = type;
+        this.code = code;
         this.discountUnit = discountUnit;
         this.amount = amount;
-    }
-
-    public DiscountUnit getDiscountUnit() {
-        return discountUnit;
-    }
-
-    public double getAmount() {
-        return amount;
     }
 
     public double applyTo(final double price) {

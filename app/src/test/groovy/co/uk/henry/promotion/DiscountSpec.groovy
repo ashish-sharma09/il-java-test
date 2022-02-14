@@ -6,7 +6,7 @@ class DiscountSpec extends Specification {
 
     def "Discount is applied correctly when it's a percentage"() {
         given: "a 10 percentage discount"
-        Discount discount = new Discount(DiscountUnit.PERCENT, 10)
+        Discount discount = new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10)
 
         when: "it is applied to the given amount"
         def discountedAmount = discount.applyTo(20)
@@ -17,7 +17,7 @@ class DiscountSpec extends Specification {
 
     def "Discount is 0 when given price is less than or equal to 0 "() {
         given: "a 10 percentage discount"
-        Discount discount = new Discount(DiscountUnit.PERCENT, 10)
+        Discount discount = new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10)
 
         when: "it is applied to the given amount"
         def discountedAmount = discount.applyTo(price)
