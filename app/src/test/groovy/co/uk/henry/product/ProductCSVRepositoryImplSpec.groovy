@@ -39,7 +39,7 @@ class ProductCSVRepositoryImplSpec extends Specification {
         ]
     }
 
-    def "thrown exception while reading csv file is wrapped correctly"() {
+    def "exception while reading csv file is wrapped correctly"() {
         given: "a mock csv reader"
         def csvReader = Mock(CSVReader)
         productRepository = new ProductCSVRepositoryImpl(csvReader)
