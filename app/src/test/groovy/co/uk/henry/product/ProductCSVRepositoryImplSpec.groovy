@@ -2,6 +2,8 @@ package co.uk.henry.product
 
 import co.uk.henry.model.Item
 import co.uk.henry.model.Unit
+import com.opencsv.CSVReader
+import com.opencsv.exceptions.CsvException
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -31,9 +33,30 @@ class ProductCSVRepositoryImplSpec extends Specification {
 
         then: "All items are returned"
         products == [
-            new Item("1", "product1", Unit.TIN, 0.65),
-            new Item("2", "product2", Unit.LOAF, 0.80),
-            new Item("3", "product3", Unit.BOTTLE, 1.30),
+                new Item("1", "product1", Unit.TIN, 0.65),
+                new Item("2", "product2", Unit.LOAF, 0.80),
+                new Item("3", "product3", Unit.BOTTLE, 1.30),
         ]
+    }
+
+    def "thrown exception while reading csv file is wrapped correctly"() {
+        given: "a mock csv reader"
+        def csvReader = Mock(CSVReader)
+        productRepository = new ProductCSVRepositoryImpl(csvReader)
+
+        and: "csvReader thrown IOException while reading the file"
+        csvReader.readAll() >> {throw csvReaderException}
+
+        when: "items are fetched"
+        productRepository.getProducts()
+
+        then: "Exception is wrapped in a runtime exception"
+        def exception = thrown(RuntimeException)
+        exception.cause.class.isInstance(csvReaderException)
+
+        where:
+        csvReaderException | _
+        new IOException()  | _
+        new CsvException() | _
     }
 }

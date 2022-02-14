@@ -20,10 +20,14 @@ public class ProductCSVRepositoryImpl implements ProductRepository {
         try {
             this.csvReader = new CSVReader(new FileReader(itemsCSVFilePath.toFile()));
         } catch (FileNotFoundException fileNotFoundException) {
-            throw new IllegalStateException(
+            throw new RuntimeException("Error while reading all items from CSV file", new IllegalStateException(
                     String.format("Given CSV file with path: %s does not exist.", itemsCSVFilePath)
-            );
+            ));
         }
+    }
+
+    ProductCSVRepositoryImpl(final CSVReader csvReader) {
+        this.csvReader  = csvReader;
     }
 
     @Override
@@ -37,11 +41,9 @@ public class ProductCSVRepositoryImpl implements ProductRepository {
             ).collect(Collectors.toList());
 
             return parsedItems;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CsvException e) {
-            throw new ProductServiceException("Error while fetching products", e);
+        } catch (final IOException | CsvException ioException) {
+            // TODO - add logging
+            throw new RuntimeException("Error while reading all items from CSV file", ioException);
         }
-        return null;
     }
 }
