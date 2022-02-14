@@ -1,8 +1,8 @@
 package co.uk.henry.promotion;
 
 import co.uk.henry.model.BasketItem;
-import co.uk.henry.model.Item;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PromotionServiceImpl implements PromotionService {
 
@@ -24,10 +24,20 @@ public class PromotionServiceImpl implements PromotionService {
             return 0;
         }
 
-        final Promotion promotion = promotions.get(0);
+        // filter promotion applicable to the item
+        final List<Promotion> applicablePromotions = promotions.stream()
+                .filter(promotion ->
+                        items.stream().anyMatch(basketItem ->
+                                basketItem.getItem().getCode().equals(promotion.getItemCode())
+                                        &&
+                                        promotion.getQuantity().appliesTo(basketItem.getQuantity())
+                        )
+                )
+                .collect(Collectors.toList());
+
         final BasketItem basketItem = items.get(0);
 
-        return promotion
+        return applicablePromotions.get(0)
                 .getDiscount()
                 .applyTo(basketItem.getItem().getPrice() * basketItem.getQuantity());
     }

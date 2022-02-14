@@ -22,4 +22,8 @@ public class Quantity {
     public Integer getMaxQuantity() {
         return maxQuantity;
     }
+
+    public boolean appliesTo(int quantity) {
+        return quantity > minQuantity;
+    }
 }
