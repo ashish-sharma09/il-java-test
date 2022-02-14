@@ -63,4 +63,12 @@ public class Promotion {
         result = 31 * result + (validityPeriod != null ? validityPeriod.hashCode() : 0);
         return result;
     }
+
+    public boolean isSub() {
+        return type == PromotionType.SUB;
+    }
+
+    public boolean isMain() {
+        return type == PromotionType.MAIN;
+    }
 }

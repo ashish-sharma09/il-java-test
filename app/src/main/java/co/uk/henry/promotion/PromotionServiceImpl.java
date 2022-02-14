@@ -1,6 +1,7 @@
 package co.uk.henry.promotion;
 
 import co.uk.henry.model.BasketItem;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +31,29 @@ public class PromotionServiceImpl implements PromotionService {
 
         final Map<BasketItem, List<Promotion>> itemToPromotions = items.stream()
                 .map(item -> Map.entry(item, applicablePromotions(item, basketDate, promotions)))
+                .filter(entry -> !entry.getValue().isEmpty())
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+        final List<Promotion> allShortlistedPromos =
+                itemToPromotions.values().stream().flatMap(List::stream).collect(Collectors.toList());
+
         return itemToPromotions.entrySet().stream()
+                .filter(entry -> isMainPromotionOrSubPromotionWithMain(entry, allShortlistedPromos))
                 .mapToDouble(entry ->
-                    entry.getValue().stream()
-                        .mapToDouble(promo -> promo.appliedDiscountTo(entry.getKey().price())).sum()
+                        entry.getValue().stream()
+                                .mapToDouble(promo -> promo.appliedDiscountTo(entry.getKey().price())).sum()
                 ).sum();
+    }
+
+    private boolean isMainPromotionOrSubPromotionWithMain(
+            Map.Entry<BasketItem, List<Promotion>> entry, List<Promotion> allShortlistedPromos
+    ) {
+        return entry.getValue().stream()
+                .anyMatch(promotion ->
+                        promotion.isMain()
+                                ||
+                                (promotion.isSub() && allShortlistedPromos.stream().anyMatch(Promotion::isMain))
+                );
     }
 
     private List<Promotion> applicablePromotions(
