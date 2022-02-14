@@ -176,7 +176,7 @@ class PromotionServiceImplSpec extends Specification {
         applicableDiscounts == 0.8
     }
 
-    def "promotion are applied only when promotion is valid for the basket's day"() {
+    def "promotion is applied only when promotion is valid for the basket's day"() {
         given: "multiple items in the basket with single quantity"
         List<BasketItem> basketItems = [
                 new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1)
