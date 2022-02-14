@@ -1,53 +1,205 @@
-package co.uk.henry.product
+package co.uk.henry.promotion
 
+import co.uk.henry.model.BasketItem
 import co.uk.henry.model.Item
 import co.uk.henry.model.Unit
 import spock.lang.Specification
+import spock.lang.Unroll
 
-class ProductServiceImplSpec extends Specification {
+import java.time.LocalDate
+import java.time.Period
 
-    private ProductService productService
-    private ProductRepository productRepository
+class PromotionServiceImplSpec extends Specification {
+
+    private def promotionService
+    private def promotionRepository
 
     void setup() {
-        productRepository = Mock()
-        productService = new ProductServiceImpl(productRepository)
+        promotionRepository = Mock(PromotionRepository)
+        promotionService = new PromotionServiceImpl(promotionRepository)
     }
 
-    def "empty list of products is provided when no products exists in the repository"() {
-        given: "there are no products in the repository"
-        productRepository.getProducts() >> []
+    @Unroll
+    def "throw error when given basket items is #items"() {
+        when: "basket items is null"
+        promotionService.getApplicableTotalDiscountFor(items, LocalDate.now())
 
-        when: "list of all products are requested"
-        def items = productService.getItems()
+        then:
+        thrown(IllegalArgumentException)
 
-        then: "items list is empty"
-        items == []
+        where:
+        items | _
+        null  | _
+        []    | _
     }
 
-    def "items is provided as returned by repository"() {
-        given: "there are products in the repository"
-        def item1 = new Item("itemCode1", "itemName1", Unit.SINGLE, 12.0)
-        def item2 = new Item("itemCode2", "itemName2", Unit.SINGLE, 2.0)
-        productRepository.getProducts() >> [item1, item2]
+    def "no discounts are applied when no promotions are available"() {
+        given: "items in the basket"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 1.25), 1)
+        ]
 
-        when: "list of all items are requested"
-        def items = productService.getItems()
+        and: "no promotions in the repository"
+        promotionRepository.getPromotions() >> []
 
-        then: "items list contains all items"
-        items == [item1, item2]
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "cost is unchanged"
+        applicableDiscounts == 0.0
     }
 
-    def "Exception thrown by ProductRepository is wrapped around Product Service exception"() {
-        given: "exception is thrown from product repository"
-        productRepository.getProducts() >> { throw new RuntimeException("product repository error") }
+    def "discount value is returned when an item in the basket has applicable promotion with 10 percent discount"() {
+        given: "item in the basket"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1)
+        ]
 
-        when: "list of all items are requested"
-        productService.getItems()
+        and: "an applicable promotion in the repository"
+        promotionRepository.getPromotions() >> [
+                new Promotion(
+                        "P1", PromotionType.MAIN, "1",
+                        new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                )
+        ]
 
-        then: "ProductServiceException wraps the underlying product repository error"
-        Exception exception = thrown(ProductServiceException)
-        exception.message == "Error from product repository"
-        exception.cause instanceof RuntimeException
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "applied discount is returned"
+        applicableDiscounts == 0.40
+    }
+
+    def "discount value is returned when items with more than 1 quantity in the basket has applicable promotion with 10 percent discount"() {
+        given: "item in the basket with multiple quantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 5),
+        ]
+
+        and: "an applicable promotion in the repository"
+        promotionRepository.getPromotions() >> [
+                new Promotion(
+                        "P1", PromotionType.MAIN, "1",
+                        new Quantity(1), new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                )
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "applied discount is returned"
+        applicableDiscounts == 2.0
+    }
+
+    def "correct promotion is applied for the item when multiple promotions are available"() {
+        given: "items in the basket"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1),
+        ]
+
+        and: "an applicable promotion with other promotions in the repository"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", PromotionType.MAIN, "2",
+                        new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                ),
+                new Promotion("P2", PromotionType.MAIN, "1",
+                        new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 5),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                )
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "applied discount is returned"
+        applicableDiscounts == 0.2
+    }
+
+    def "promotion is only applied when promotion quantity condition matches basket item's quantity"() {
+        given: "items in the basket with quantity #basketItemQuantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), basketItemQuantity),
+        ]
+
+        and: "an applicable promotion in the repository with min quantity #promotionMinQuantity"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", PromotionType.MAIN, "1",
+                        new Quantity(promotionMinQuantity),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 5),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                )
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "applied discount is returned"
+        applicableDiscounts == appliedDiscount
+
+        where:
+        basketItemQuantity | promotionMinQuantity | appliedDiscount
+        1                  | 2                    | 0.0
+        2                  | 2                    | 0.4
+    }
+
+    def "multiple promotions are applied for all items with matching quantity of items in the basket"() {
+        given: "multiple items in the basket with single quantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1),
+                new BasketItem(new Item("2","someName", Unit.TIN, 5.00), 1),
+                new BasketItem(new Item("3","someName", Unit.BOTTLE, 6.00), 1),
+        ]
+
+        and: "two applicable promotions"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", PromotionType.MAIN, "2",
+                        new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                ),
+                new Promotion("P2", PromotionType.MAIN, "3", new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 5),
+                        new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))
+                )
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+
+        then: "applied discount is returned"
+        applicableDiscounts == 0.8
+    }
+
+    def "promotion are applied only when promotion is valid for the basket's day"() {
+        given: "multiple items in the basket with single quantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1)
+        ]
+
+        and: "a promotion with validity from yesterday to next 7 days"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", PromotionType.MAIN, "1",
+                        new Quantity(1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
+                ),
+        ]
+
+        when: "fetching cost with applied discounts with basket period of #period"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now().plusDays(period))
+
+        then: "applied discount is returned"
+        applicableDiscounts == expectedDiscount
+
+        where:
+        period | expectedDiscount
+        1      | 0.4
+        14     | 0.0
     }
 }
