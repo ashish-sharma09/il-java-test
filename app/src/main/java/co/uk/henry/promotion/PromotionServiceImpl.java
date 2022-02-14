@@ -30,19 +30,21 @@ public class PromotionServiceImpl implements PromotionService {
 
         final Map<BasketItem, List<Promotion>> itemToPromotions = items.stream()
                 .map(item ->
-                        Map.entry(item, promotions.stream()
-                                .filter(promotion ->
-                                        promotion.getItemCode().equals(item.getItem().getCode())
-                                                &&
-                                                promotion.getQuantity().appliesTo(item.getQuantity())
-                                ).collect(Collectors.toList())
-                        )
+                    Map.entry(item, promotions.stream()
+                        .filter(promotion ->
+                            promotion.getItemCode().equals(item.getItem().getCode())
+                                &&
+                                promotion.getQuantity().appliesTo(item.getQuantity())
+                                &&
+                                promotion.getValidityPeriod().isValidFor(basketDate)
+                        ).collect(Collectors.toList())
+                    )
                 ).collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return itemToPromotions.entrySet().stream()
                 .mapToDouble(entry ->
-                        entry.getValue().stream()
-                                .mapToDouble(promo -> promo.getDiscount().applyTo(entry.getKey().price())).sum()
+                    entry.getValue().stream()
+                        .mapToDouble(promo -> promo.getDiscount().applyTo(entry.getKey().price())).sum()
                 ).sum();
     }
 }

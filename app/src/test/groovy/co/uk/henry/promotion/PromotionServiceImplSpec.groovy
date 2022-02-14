@@ -149,22 +149,22 @@ class PromotionServiceImplSpec extends Specification {
         applicableDiscounts == 0.8
     }
 
-    def "promotion valid from yesterday to next 7 days is applied when basket date falls within this period"() {
+    def "promotion valid from yesterday to next 7 days is applied when bought tomorrow"() {
         given: "multiple items in the basket with single quantity"
         List<BasketItem> basketItems = [
                 new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1)
         ]
 
-        and: "two applicable promotions"
+        and: "a promotion with validity from yesterday to next 7 days"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10),
+                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10),
                         new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))),
         ]
 
-        when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
+        when: "fetching cost with applied discounts with basket date of today"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now().plusDays(1))
 
         then: "applied discount is returned"
-        applicableDiscounts == 0.8
+        applicableDiscounts == 0.4
     }
 }
