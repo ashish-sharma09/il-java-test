@@ -6,6 +6,8 @@ import java.time.temporal.TemporalAdjusters;
 
 public class ValidityPeriod {
 
+    public static ValidityPeriod FOREVER = new ValidityPeriod(Period.ZERO, Period.ofYears(Integer.MAX_VALUE));
+
     private final Period validFrom;
     private final Period validTo;
 

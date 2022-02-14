@@ -1,24 +1,28 @@
 package co.uk.henry.promotion;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class Discount {
     private final DiscountType type;
     private final String code;
-    private final DiscountUnit discountUnit;
-    private final double amount;
+    private final DiscountUnit unit;
+    private final double value;
 
-    public Discount(DiscountType type, DiscountUnit discountUnit, double amount) {
-        this(type, null, discountUnit, amount);
+
+    public Discount(DiscountType type, DiscountUnit unit, double value) {
+        this(type, null, unit, value);
     }
 
     public Discount(DiscountType type, String code) {
         this(type, code, null, 0.0);
     }
 
-    private Discount(DiscountType type, String code, DiscountUnit discountUnit, double amount) {
+    @JsonCreator
+    public Discount(DiscountType type, String code, DiscountUnit unit, double value) {
         this.type = type;
         this.code = code;
-        this.discountUnit = discountUnit;
-        this.amount = amount;
+        this.unit = unit;
+        this.value = value;
     }
 
     public double applyTo(final double price) {
@@ -26,8 +30,8 @@ public class Discount {
             return 0;
         }
 
-        if (discountUnit == DiscountUnit.PERCENT) {
-            return price * amount / 100;
+        if (unit == DiscountUnit.PERCENT) {
+            return price * value / 100;
         }
         return 0;
     }

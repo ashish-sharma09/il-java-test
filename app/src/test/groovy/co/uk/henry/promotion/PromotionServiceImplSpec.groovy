@@ -11,7 +11,7 @@ import java.time.Period
 
 class PromotionServiceImplSpec extends Specification {
 
-    private def promotionService;
+    private def promotionService
     private def promotionRepository
 
     void setup() {

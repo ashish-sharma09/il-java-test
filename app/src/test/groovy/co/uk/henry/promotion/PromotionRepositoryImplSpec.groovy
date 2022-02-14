@@ -36,9 +36,9 @@ class PromotionRepositoryImplSpec extends Specification {
                         new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
                 ),
                 new Promotion (
-                        "P2", PromotionType.MAIN, "1",
-                        new Quantity(1,2), new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 50),
-                        new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
+                        "P2", PromotionType.SUB, "2",
+                        new Quantity(1,1), new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 50),
+                        ValidityPeriod.FOREVER
                 ),
                 new Promotion (
                         "P3", PromotionType.MAIN, "1",

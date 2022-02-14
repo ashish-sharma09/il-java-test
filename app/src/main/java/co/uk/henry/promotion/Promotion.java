@@ -8,18 +8,18 @@ public class Promotion {
 
     private final String code;
     private final PromotionType type;
-    private final String itemCode;
+    private final String item;
     private final Quantity quantity;
     private final Discount discount;
     private final ValidityPeriod validityPeriod;
 
     public Promotion(
-            String code, PromotionType type, String itemCode, Quantity quantity,
+            String code, PromotionType type, String item, Quantity quantity,
             Discount discount, ValidityPeriod validityPeriod
     ) {
         this.code = code;
         this.type = type;
-        this.itemCode = itemCode;
+        this.item = item;
         this.quantity = quantity;
         this.discount = discount;
         this.validityPeriod = validityPeriod;
@@ -27,7 +27,7 @@ public class Promotion {
 
     public boolean isApplicableTo(final BasketItem item, final LocalDate basketDate) {
         return
-                itemCode.equals(item.getItem().getCode())
+                this.item.equals(item.getItem().getCode())
                         &&
                         quantity.appliesTo(item.getQuantity())
                         &&

@@ -2,15 +2,15 @@ package co.uk.henry.promotion;
 
 public class Quantity {
 
-    private final Integer minQuantity;
-    private final Integer maxQuantity;
+    private final int minQuantity;
+    private final int maxQuantity;
 
-    public Quantity(final Integer minQuantity, final Integer maxQuantity) {
+    public Quantity(final int minQuantity, final int maxQuantity) {
         this.minQuantity = minQuantity;
         this.maxQuantity = maxQuantity;
     }
 
-    public Quantity(final Integer minQuantity) {
+    public Quantity(final int minQuantity) {
         this.minQuantity = minQuantity;
         this.maxQuantity = Integer.MAX_VALUE;
     }
