@@ -25,8 +25,10 @@ public class PromotionServiceImpl implements PromotionService {
         }
 
         final Promotion promotion = promotions.get(0);
-        final Item basketItem = items.get(0).getItem();
+        final BasketItem basketItem = items.get(0);
 
-        return promotion.getDiscount().applyTo(basketItem.getPrice());
+        return promotion
+                .getDiscount()
+                .applyTo(basketItem.getItem().getPrice() * basketItem.getQuantity());
     }
 }

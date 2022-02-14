@@ -63,4 +63,22 @@ class PromotionServiceImplSpec extends Specification {
         then: "applied discount is returned"
         applicableDiscounts == 0.40
     }
+
+    def "discount value is returned when items with more than 1 quantity in the basket has applicable promotion with 15 percent discount"() {
+        given: "items in the basket"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 5),
+        ]
+
+        and: "an applicable promotion in the repository"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10))
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+
+        then: "applied discount is returned"
+        applicableDiscounts == 2.0
+    }
 }
