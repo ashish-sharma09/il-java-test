@@ -3,6 +3,7 @@ package co.uk.henry.basket;
 import co.uk.henry.model.Basket;
 import co.uk.henry.model.Item;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
-    public Basket getBasket() {
+    public Basket getBasketFor(Period day) {
         return new Basket(
                 items.stream().map(basketItem -> basketItem.item).collect(Collectors.toList()),
                 items.stream().mapToDouble(BasketItem::cost).sum()

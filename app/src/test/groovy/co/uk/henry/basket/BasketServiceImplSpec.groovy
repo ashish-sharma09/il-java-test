@@ -5,6 +5,8 @@ import co.uk.henry.model.Unit
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Period
+
 class BasketServiceImplSpec extends spock.lang.Specification {
 
     BasketService basketService = new BasketServiceImpl()
@@ -44,7 +46,7 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         given: "no items are added to the basket"
 
         when: "basket is retrieved"
-        def basket = basketService.getBasket()
+        def basket = basketService.getBasketFor(Period.ofDays(0))
 
         then: "basket is empty"
         basket.items == []
@@ -58,7 +60,7 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         basketService.add(item, 1)
 
         and: "basket is retrieved"
-        def basket = basketService.getBasket()
+        def basket = basketService.getBasketFor(Period.ofDays(0))
 
         then: "item exists in the basket"
         basket.items == [item]
@@ -77,7 +79,7 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         basketService.add(item2, 1)
 
         and: "basket is retrieved"
-        def basket = basketService.getBasket()
+        def basket = basketService.getBasketFor(Period.ofDays(0))
 
         then: "item exists in the basket"
         basket.items == [item1, item2]
@@ -94,7 +96,7 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         basketService.add(item, 5)
 
         and: "basket is retrieved"
-        def basket = basketService.getBasket()
+        def basket = basketService.getBasketFor(Period.ofDays(0))
 
         then: "item exists in the basket"
         basket.items == [item]

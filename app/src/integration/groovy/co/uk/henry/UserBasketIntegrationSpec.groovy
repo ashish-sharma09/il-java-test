@@ -8,6 +8,7 @@ import co.uk.henry.product.ProductServiceImpl
 import spock.lang.Specification
 
 import java.nio.file.Paths
+import java.time.Period
 
 class UserBasketIntegrationSpec extends Specification {
 
@@ -33,10 +34,114 @@ class UserBasketIntegrationSpec extends Specification {
         basketService.add(item, 1)
 
         then: "basket reflects the added item"
-        def basket = basketService.getBasket()
+        def basket = basketService.getBasketFor(Period.ofDays(0))
         basket.items == [item]
 
         and: "the total cost"
         basket.totalCost == item.price
     }
+
+    def "Multiple items can be added to the user's basket and their total price retrieved"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "two items to be added"
+        def item1 = items.get(0)
+        def item2 = items.get(1)
+
+        when: "the chosen item has been added to the basket"
+        basketService.add(item1, 1)
+        basketService.add(item2, 1)
+
+        then: "basket reflects the added item"
+        def basket = basketService.getBasketFor(Period.ofDays(0))
+        basket.items == [item1, item2]
+
+        and: "the total cost"
+        basket.totalCost == item1.price + item2.price
+    }
+
+    def "Multiple items can be added with multiple quantities to the user's basket and their total price retrieved"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "two items to be added"
+        def item1 = items.get(0)
+        def item2 = items.get(1)
+
+        when: "the chosen item has been added to the basket"
+        basketService.add(item1, 2)
+        basketService.add(item2, 3)
+
+        then: "basket reflects the added item"
+        def basket = basketService.getBasketFor(Period.ofDays(0))
+        basket.items == [item1, item2]
+
+        and: "the total cost"
+        basket.totalCost ==( 2 * item1.price + 3 * item2.price)
+    }
+
+    def "Apples have 10% discount applied when added to the basket for the applicable date"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "two items to be added"
+        def apples = items.find {it.name == "apples"}
+
+        when: "5 apples are added to the basket"
+        basketService.add(apples, 5)
+
+        then: "basket reflects the added item"
+        def basket = basketService.getBasketFor(Period.ofDays(0))
+        basket.items == [apples]
+
+        and: "the total cost"
+        basket.totalCost == 0.45
+    }
+
+    /*
+            code        - P1
+            type        - main-promo
+            item        - 4
+            unit        - single
+            minQuantity - 1
+            maxQuantity - na
+            validFrom   - -1d
+            validTo     -  7d
+            discount
+                type       - money
+                code       - na
+                unit       - percentage
+                value      - 10
+
+
+            code        - P2
+            type        - main-promo
+            item        - 1
+            unit        - tins
+            minQuantity - 2
+            maxQuantity - 2
+            validFrom   - 3d
+            validTo     - 1mo+
+            discount
+                type        - sub-promo
+                code        - P3
+                unit        - na
+                value       - na
+
+            code        - P3
+            type        - sub-promo
+            item        - 2
+            unit        - loaf
+            minQuantity - 1
+            maxQuantity - 1
+            validFrom   -
+            validTo     -
+            discount
+                type        - money
+                code        - na
+                unit        - percentage
+                value       - 10
+    */
+
 }
