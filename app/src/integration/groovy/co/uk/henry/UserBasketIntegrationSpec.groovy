@@ -94,4 +94,29 @@ class UserBasketIntegrationSpec extends Specification {
         and: "the total cost"
         basket.totalCost == 0.45
     }
+    // TODO - test for outside date
+
+    def "loaves of bread are half price when two tins of soup are bought for the applicable date"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "soup tin and bread to be added"
+        def soup = items.find {it.name == "soup"}
+        def bread = items.find {it.name == "bread"}
+
+        when: "2 tins of soup are added"
+        basketService.add(soup, 2)
+
+        and: "one loaf of bread is added"
+        basketService.add(bread, 1)
+
+        and: "basket fetched for tomorrow"
+        def basket = basketService.getBasketFor(Period.ofDays(1))
+
+        then: "basket reflects the added item"
+        basket.items == [soup, bread]
+
+        and: "the total cost with 50% discount on loaf of bread"
+        basket.totalCost == 1.70
+    }
 }

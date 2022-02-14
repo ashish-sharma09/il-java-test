@@ -7,13 +7,48 @@
 			"minQuantity": 1
 		},
 		"validityPeriod": {
-			"validFrom": "-P1D",
-			"validTo": "P7D"
+			"validFrom": "P3D",
+			"validTo": "P1M"
 		},
 		"discount": {
 			"type": "MONEY",
 			"unit": "PERCENT",
 			"value": "10"
+		}
+	},
+	{
+		"code": "P2",
+		"type": "MAIN",
+		"item": "1",
+		"quantity": {
+			"minQuantity": 1,
+			"maxQuantity": 1
+		},
+		"validityPeriod": {
+			"validFrom": "-P1D",
+			"validTo": "P7D"
+		},
+		"discount": {
+			"type": "SUB",
+			"code": "P3"
+		}
+	},
+	{
+		"code": "P3",
+		"type": "SUB",
+		"item": "2",
+		"quantity": {
+			"minQuantity": 1,
+			"maxQuantity": 1
+		},
+		"validityPeriod": {
+			"validFrom": "na",
+			"validTo": "na"
+		},
+		"discount": {
+			"type": "MONEY",
+			"unit": "PERCENT",
+			"value": "50"
 		}
 	}
 ]
