@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PromotionServiceImpl implements PromotionService {
     @Override
-    public BigDecimal getCostWithApplicableDiscountsfor(final List<BasketItem> items) {
+    public BigDecimal getPriceWithApplicableDiscountsfor(final List<BasketItem> items) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("basket items cannot be null or empty");
         }

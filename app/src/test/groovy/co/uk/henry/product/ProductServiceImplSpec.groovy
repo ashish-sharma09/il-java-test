@@ -39,7 +39,7 @@ class ProductServiceImplSpec extends Specification {
     }
 
     def "Exception thrown by ProductRepository is wrapped around Product Service exception"() {
-        given: "exception is thron from product repository"
+        given: "exception is thrown from product repository"
         productRepository.getProducts() >> { throw new RuntimeException("product repository error") }
 
         when: "list of all items are requested"
