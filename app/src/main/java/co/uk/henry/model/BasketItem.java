@@ -21,6 +21,10 @@ public class BasketItem {
         return item.getPrice() * quantity;
     }
 
+    public double priceFor(int quantity) {
+        return item.getPrice() * quantity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

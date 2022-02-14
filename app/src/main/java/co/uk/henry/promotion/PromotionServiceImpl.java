@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
 import static java.util.stream.Collectors.toMap;
 
 public class PromotionServiceImpl implements PromotionService {
@@ -41,7 +42,11 @@ public class PromotionServiceImpl implements PromotionService {
                 .filter(entry -> isMainPromotionOrSubPromotionWithMain(entry, allShortlistedPromos))
                 .mapToDouble(entry ->
                         entry.getValue().stream()
-                                .mapToDouble(promo -> promo.appliedDiscountTo(entry.getKey().price())).sum()
+                                .mapToDouble(promo ->
+                                        promo.appliedDiscountTo(
+                                                entry.getKey().priceFor(min(entry.getKey().getQuantity(), promo.maxApplicableQuantity()))
+                                        )
+                                ).sum()
                 ).sum();
     }
 

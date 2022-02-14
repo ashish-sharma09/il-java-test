@@ -21,8 +21,7 @@
 		"type": "MAIN",
 		"item": "1",
 		"quantity": {
-			"minQuantity": 2,
-			"maxQuantity": 2
+			"minQuantity": 2
 		},
 		"validityPeriod": {
 			"validFrom": "-P1D",
@@ -48,7 +47,8 @@
 		"discount": {
 			"type": "MONEY",
 			"unit": "PERCENT",
-			"value": "50"
+			"value": "50",
+			"appliesTo": 1
 		}
 	}
 ]

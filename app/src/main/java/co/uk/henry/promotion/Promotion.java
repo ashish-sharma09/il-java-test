@@ -38,6 +38,10 @@ public class Promotion {
         return discount.applyTo(itemPrice);
     }
 
+    public int maxApplicableQuantity() {
+        return quantity.getMaxQuantity();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -204,7 +204,7 @@ class PromotionServiceImplSpec extends Specification {
     }
 
     def "sub promotion is applied when main promotion matches the basket"() {
-        given: "multiple items in the basket with single quantity"
+        given: "multiple items in the basket"
         List<BasketItem> basketItems = [
                 new BasketItem(new Item("1","soup", Unit.TIN, 0.65), 2),
                 new BasketItem(new Item("2","bread", Unit.LOAF, 0.80), 1),
@@ -214,6 +214,34 @@ class PromotionServiceImplSpec extends Specification {
         promotionRepository.getPromotions() >> [
                 new Promotion("P1", PromotionType.MAIN, "1",
                         new Quantity(2, 2),
+                        new Discount(DiscountType.SUB, "P2"),
+                        new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
+                ),
+                new Promotion("P2", PromotionType.SUB, "2",
+                        new Quantity(1, 1),
+                        new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 50),
+                        ValidityPeriod.FOREVER
+                )
+        ]
+
+        when: "fetching applied discounts for valid basket period"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now().plusDays(1))
+
+        then: "applied discount is returned"
+        applicableDiscounts == 0.40
+    }
+
+    def "sub promotion is applied to the quantity as per the promotion when basket contain more quantity"() {
+        given: "multiple items in the basket with single quantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","soup", Unit.TIN, 0.65), 3),
+                new BasketItem(new Item("2","bread", Unit.LOAF, 0.80), 2),
+        ]
+
+        and: "a main promotion matching quantity on item 1 applies a sub promotion on item 2 and is valid for 7 days"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", PromotionType.MAIN, "1",
+                        new Quantity(2),
                         new Discount(DiscountType.SUB, "P2"),
                         new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
                 ),

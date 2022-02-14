@@ -36,21 +36,4 @@ class QuantitySpec extends Specification {
         2           | 3            | true
         2           | 2            | true
     }
-
-    def "applying quantity should return true if given quantity falls between given min quantity and max quantity"() {
-        given:
-        Quantity quantity = new Quantity(minQuantity, maxQuantity)
-
-        when:
-        def quantityApplicable = quantity.appliesTo(itemQuantity)
-
-        then:
-        quantityApplicable == isApplicable
-
-        where:
-        minQuantity | maxQuantity | itemQuantity | isApplicable
-        2           | 4           | 3            | true
-        2           | 2           | 2            | true
-        2           | 2           | 3            | false
-    }
 }

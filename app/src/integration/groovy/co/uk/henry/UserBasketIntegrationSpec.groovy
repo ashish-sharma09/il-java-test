@@ -68,7 +68,7 @@ class UserBasketIntegrationSpec extends Specification {
 
         and: "two items to be added"
         def item1 = items.get(0)
-        def item2 = items.get(1)
+        def item2 = items.get(2)
 
         when: "the chosen item has been added to the basket"
         basketService.add(item1, 2)
@@ -83,6 +83,7 @@ class UserBasketIntegrationSpec extends Specification {
         and: "the total cost"
         basket.totalCost == truncatedToTwoDecimalPlaces(2 * item1.price + 3 * item2.price)
     }
+
     def "Apples have 10% discount applied when added to the basket for the applicable date"() {
         given: "All available products"
         def items = productService.getItems()
@@ -103,7 +104,7 @@ class UserBasketIntegrationSpec extends Specification {
         basket.totalCost == 0.45D
     }
 
-    def "loaves of bread are half price when two tins of soup are bought for the applicable date else no discount given"() {
+    def "loaf of bread is half price when two tins of soup are bought for the applicable date else no discount given"() {
         given: "All available products"
         def items = productService.getItems()
 
@@ -132,7 +133,7 @@ class UserBasketIntegrationSpec extends Specification {
         45   | 2.10D
     }
 
-    def "2 loaves of bread are half price when three tins of soup are bought for the applicable date"() {
+    def "1 loaf of bread is half price when 3 tins of soup and 2 loaves are bought for the applicable date"() {
         given: "All available products"
         def items = productService.getItems()
 
@@ -154,6 +155,82 @@ class UserBasketIntegrationSpec extends Specification {
 
         and: "the total cost with 50% discount on loaf of bread"
         basket.totalCost == 3.15D
+    }
+
+    def "6 apples and a bottle of milk for the applicable date"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "apples and milk to be added"
+        def apples = items.find {it.name == "apples"}
+        def milk = items.find {it.name == "milk"}
+
+        when: "6 apples are added"
+        basketService.add(apples, 6)
+
+        and: "1 milk is added"
+        basketService.add(milk, 1)
+
+        and: "basket fetched for today"
+        def basket = basketService.getBasketFor(Period.ofDays(0))
+
+        then: "basket reflects the added item"
+        basket.items == [apples, milk]
+
+        and: "the total cost with 50% discount on loaf of bread"
+        basket.totalCost == 1.90D
+    }
+
+    def "6 apples and a bottle of milk bought in five days time"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "apples and milk to be added"
+        def apples = items.find {it.name == "apples"}
+        def milk = items.find {it.name == "milk"}
+
+        when: "6 apples are added"
+        basketService.add(apples, 6)
+
+        and: "1 milk is added"
+        basketService.add(milk, 1)
+
+        and: "basket fetched in five days time"
+        def basket = basketService.getBasketFor(Period.ofDays(5))
+
+        then: "basket reflects the added item"
+        basket.items == [apples, milk]
+
+        and: "the total cost with 50% discount on loaf of bread"
+        basket.totalCost == 1.84D
+    }
+
+    def "3 apples, 2 tins of soup and a loaf of bread bought in five days time"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "apples and milk to be added"
+        def apples = items.find {it.name == "apples"}
+        def soup = items.find {it.name == "soup"}
+        def bread = items.find {it.name == "bread"}
+
+        when: "3 apples are added"
+        basketService.add(apples, 3)
+
+        and: "2 tins of soup is added"
+        basketService.add(soup, 2)
+
+        and: "a loaf of bread"
+        basketService.add(bread, 1)
+
+        and: "basket fetched in five days time"
+        def basket = basketService.getBasketFor(Period.ofDays(5))
+
+        then: "basket reflects the added item"
+        basket.items == [apples, soup, bread]
+
+        and: "the total cost with 50% discount on loaf of bread"
+        basket.totalCost == 1.97D
     }
 
     private double truncatedToTwoDecimalPlaces(double price) {

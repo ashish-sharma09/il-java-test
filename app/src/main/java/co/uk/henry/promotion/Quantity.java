@@ -16,7 +16,11 @@ public class Quantity {
     }
 
     public boolean appliesTo(int quantity) {
-        return quantity >= minQuantity && quantity <= maxQuantity;
+        return quantity >= minQuantity;
+    }
+
+    public int getMaxQuantity() {
+        return maxQuantity;
     }
 
     @Override
