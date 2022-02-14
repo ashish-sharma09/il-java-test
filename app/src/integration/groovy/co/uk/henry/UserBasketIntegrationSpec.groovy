@@ -1,15 +1,15 @@
 package co.uk.henry
 
 import co.uk.henry.basket.BasketService
+import co.uk.henry.basket.BasketServiceImpl
 import co.uk.henry.price.ProductService
-import co.uk.henry.promotion.PromotionService
+import co.uk.henry.product.ProductServiceImpl
 import spock.lang.Specification
 
 class UserBasketIntegrationSpec extends Specification {
 
-    private final BasketService basketService
-    private final ProductService productService
-    private final PromotionService promotionService
+    private BasketService basketService = new BasketServiceImpl()
+    private ProductService productService = new ProductServiceImpl()
 
     def "An item can be added to an user's basket and it's price retrieved"() {
         given: "All available products"
