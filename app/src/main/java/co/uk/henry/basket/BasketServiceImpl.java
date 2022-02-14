@@ -1,6 +1,7 @@
 package co.uk.henry.basket;
 
 import co.uk.henry.model.Basket;
+import co.uk.henry.model.BasketItem;
 import co.uk.henry.model.Item;
 
 import java.time.Period;
@@ -32,26 +33,12 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public Basket getBasketFor(Period day) {
         return new Basket(
-                items.stream().map(basketItem -> basketItem.item).collect(Collectors.toList()),
+                items.stream().map(BasketItem::getItem).collect(Collectors.toList()),
                 items.stream().mapToDouble(BasketItem::cost).sum()
         );
     }
 
     private void throwIllegalArgument(String An_item_cannot_be_null) {
         throw new IllegalArgumentException(An_item_cannot_be_null);
-    }
-
-    private static class BasketItem {
-        private final Item item;
-        private final int quantity;
-
-        private BasketItem(final Item item, final int quantity) {
-            this.item = item;
-            this.quantity = quantity;
-        }
-
-        private Double cost() {
-            return item.getPrice() * quantity;
-        }
     }
 }
