@@ -3,7 +3,9 @@ package co.uk.henry.basket;
 import co.uk.henry.model.Basket;
 import co.uk.henry.model.BasketItem;
 import co.uk.henry.model.Item;
+import co.uk.henry.promotion.PromotionService;
 
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,10 @@ import java.util.stream.Collectors;
 public class BasketServiceImpl implements BasketService {
 
     private final List<BasketItem> items;
+    private final PromotionService promotionService;
 
-    public BasketServiceImpl() {
+    public BasketServiceImpl(final PromotionService promotionService) {
+        this.promotionService = promotionService;
         this.items = new ArrayList<>();
     }
 
@@ -31,10 +35,14 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
-    public Basket getBasketFor(Period day) {
+    public Basket getBasketFor(final Period day) {
+
+        final double applicableDiscount =
+                promotionService.getApplicableTotalDiscountFor(items, LocalDate.now().plusDays(day.getDays()));
+
         return new Basket(
                 items.stream().map(BasketItem::getItem).collect(Collectors.toList()),
-                items.stream().mapToDouble(BasketItem::price).sum()
+                items.stream().mapToDouble(BasketItem::price).sum() - applicableDiscount
         );
     }
 

@@ -7,6 +7,5 @@ import java.time.Period;
 
 public interface BasketService {
     void add(Item item, int quantity);
-
     Basket getBasketFor(Period day);
 }

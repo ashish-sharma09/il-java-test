@@ -1,6 +1,5 @@
 package co.uk.henry.promotion
 
-
 import spock.lang.Specification
 
 import java.nio.file.Path
