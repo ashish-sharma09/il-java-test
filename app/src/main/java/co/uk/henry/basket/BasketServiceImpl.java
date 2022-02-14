@@ -34,7 +34,7 @@ public class BasketServiceImpl implements BasketService {
     public Basket getBasketFor(Period day) {
         return new Basket(
                 items.stream().map(BasketItem::getItem).collect(Collectors.toList()),
-                items.stream().mapToDouble(BasketItem::cost).sum()
+                items.stream().mapToDouble(BasketItem::price).sum()
         );
     }
 

@@ -37,8 +37,10 @@ public class PromotionServiceImpl implements PromotionService {
 
         final BasketItem basketItem = items.get(0);
 
-        return applicablePromotions.get(0)
-                .getDiscount()
-                .applyTo(basketItem.getItem().getPrice() * basketItem.getQuantity());
+        return applicablePromotions.stream()
+                .map(Promotion::getDiscount)
+                .mapToDouble(
+                        discount -> discount.applyTo(basketItem.price())
+                ).sum();
     }
 }

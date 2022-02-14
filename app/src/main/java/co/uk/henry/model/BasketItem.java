@@ -17,7 +17,7 @@ public class BasketItem {
         return quantity;
     }
 
-    public Double cost() {
+    public double price() {
         return item.getPrice() * quantity;
     }
 }

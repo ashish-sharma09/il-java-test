@@ -101,21 +101,26 @@ class PromotionServiceImplSpec extends Specification {
         applicableDiscounts == 0.2
     }
 
-    def "promotion is not applied when promotion quantity condition does not with basket item's quantity"() {
-        given: "items in the basket with quantity 1"
+    def "promotion is only applied when promotion quantity condition matches basket item's quantity"() {
+        given: "items in the basket with quantity #basketItemQuantity"
         List<BasketItem> basketItems = [
-                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1),
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), basketItemQuantity),
         ]
 
-        and: "an applicable promotion in the repository with min quantity 2"
+        and: "an applicable promotion in the repository with min quantity #promotionMinQuantity"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "1", new Quantity(2), new Discount(DiscountUnit.PERCENT, 5))
+                new Promotion("P1", "1", new Quantity(promotionMinQuantity), new Discount(DiscountUnit.PERCENT, 5))
         ]
 
         when: "fetching cost with applied discounts"
         def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
 
         then: "applied discount is returned"
-        applicableDiscounts == 0.0
+        applicableDiscounts == appliedDiscount
+
+        where:
+        basketItemQuantity | promotionMinQuantity | appliedDiscount
+        1                  | 2                    | 0.0
+        2                  | 2                    | 0.4
     }
 }
