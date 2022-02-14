@@ -18,4 +18,22 @@ public class Quantity {
     public boolean appliesTo(int quantity) {
         return quantity >= minQuantity && quantity <= maxQuantity;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Quantity)) return false;
+
+        Quantity quantity = (Quantity) o;
+
+        if (minQuantity != quantity.minQuantity) return false;
+        return maxQuantity == quantity.maxQuantity;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = minQuantity;
+        result = 31 * result + maxQuantity;
+        return result;
+    }
 }

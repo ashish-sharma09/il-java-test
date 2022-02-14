@@ -30,4 +30,22 @@ public class ValidityPeriod {
         }
         return localDate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ValidityPeriod)) return false;
+
+        ValidityPeriod that = (ValidityPeriod) o;
+
+        if (validFrom != null ? !validFrom.equals(that.validFrom) : that.validFrom != null) return false;
+        return validTo != null ? validTo.equals(that.validTo) : that.validTo == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = validFrom != null ? validFrom.hashCode() : 0;
+        result = 31 * result + (validTo != null ? validTo.hashCode() : 0);
+        return result;
+    }
 }

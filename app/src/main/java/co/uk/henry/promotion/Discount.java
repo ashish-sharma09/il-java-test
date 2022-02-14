@@ -35,4 +35,29 @@ public class Discount {
         }
         return 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Discount)) return false;
+
+        Discount discount = (Discount) o;
+
+        if (Double.compare(discount.value, value) != 0) return false;
+        if (type != discount.type) return false;
+        if (code != null ? !code.equals(discount.code) : discount.code != null) return false;
+        return unit == discount.unit;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (code != null ? code.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        temp = Double.doubleToLongBits(value);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

@@ -1,23 +1,5 @@
 [
   {
-    "code": "P1",
-    "type": "MAIN",
-    "item": "1",
-    "quantity": {
-      "minQuantity": 1,
-      "maxQuantity": 2
-    },
-    "validityPeriod": {
-      "validFrom": "-P1D",
-      "validTo": "P7D"
-    },
-    "discount": {
-      "type": "MONEY",
-      "unit": "PERCENT",
-      "value": "10"
-    }
-  },
-  {
     "code": "P2",
     "type": "SUB",
     "item": "2",
@@ -37,7 +19,7 @@
   },
   {
     "code": "P3",
-    "type": "main",
+    "type": "MAIN",
     "item": "3",
     "quantity": {
       "minQuantity": 1,
