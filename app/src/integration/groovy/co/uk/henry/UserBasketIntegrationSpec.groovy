@@ -1,13 +1,9 @@
 package co.uk.henry
 
 import co.uk.henry.basket.BasketService
-import co.uk.henry.basket.BasketServiceImpl
-import co.uk.henry.product.ProductCSVRepositoryImpl
 import co.uk.henry.product.ProductService
-import co.uk.henry.product.ProductServiceImpl
 import spock.lang.Specification
 
-import java.nio.file.Paths
 import java.time.Period
 
 class UserBasketIntegrationSpec extends Specification {
@@ -15,12 +11,12 @@ class UserBasketIntegrationSpec extends Specification {
     private BasketService basketService
     private ProductService productService
 
-    void setup() {
-        basketService = new BasketServiceImpl()
-        def resource = this.class.getClassLoader().getResource("items.csv")
+    private Application application
 
-        def productRepository = new ProductCSVRepositoryImpl(Paths.get(resource.toURI()))
-        productService = new ProductServiceImpl(productRepository)
+    void setup() {
+        application = new Application()
+        basketService = application.getBasketService()
+        productService = application.getProductService()
     }
 
     def "An item can be added to an user's basket and it's price retrieved"() {
@@ -85,7 +81,7 @@ class UserBasketIntegrationSpec extends Specification {
         given: "All available products"
         def items = productService.getItems()
 
-        and: "two items to be added"
+        and: "apples to be added"
         def apples = items.find {it.name == "apples"}
 
         when: "5 apples are added to the basket"
