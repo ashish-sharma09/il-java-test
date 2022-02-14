@@ -54,7 +54,7 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         given: "an item exists"
         Item item = new Item("itemCode", "itemName", Unit.SINGLE, 10.0)
 
-        when: "an item is added to the basket"
+        when: "it is added to the basket"
         basketService.add(item, 1)
 
         and: "basket is retrieved"
@@ -65,5 +65,41 @@ class BasketServiceImplSpec extends spock.lang.Specification {
 
         and: "price for quantity 1 is as expected"
         basket.totalCost == 10.0
+    }
+
+    def 'Multiple items of quantity 1 each can be added to the basket and retrieved successfully with its total cost'() {
+        given: "multiple items exists"
+        Item item1 = new Item("itemCode1", "itemName1", Unit.SINGLE, 10.0)
+        Item item2 = new Item("itemCode2", "itemName2", Unit.SINGLE, 5.50)
+
+        when: "it is added to the basket"
+        basketService.add(item1, 1)
+        basketService.add(item2, 1)
+
+        and: "basket is retrieved"
+        def basket = basketService.getBasket()
+
+        then: "item exists in the basket"
+        basket.items == [item1, item2]
+
+        and: "price for given quantities is as expected"
+        basket.totalCost == 15.50
+    }
+
+    def "An item with multiple quantity can be added and its basket cost retrieved successfully"() {
+        given: "an item exists"
+        Item item = new Item("itemCode", "itemName", Unit.SINGLE, 10.0)
+
+        when: "it is added to the basket"
+        basketService.add(item, 5)
+
+        and: "basket is retrieved"
+        def basket = basketService.getBasket()
+
+        then: "item exists in the basket"
+        basket.items == [item]
+
+        and: "price for quantity 1 is as expected"
+        basket.totalCost == 50.0
     }
 }

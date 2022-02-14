@@ -1,18 +1,18 @@
 package co.uk.henry.model;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Basket {
 
-    private final List<Item> items;
+    private final Collection<Item> items;
     private final Double totalCost;
 
-    public Basket(List<Item> items, Double totalCost) {
+    public Basket(final Collection<Item> items, final Double totalCost) {
         this.items = items;
         this.totalCost = totalCost;
     }
 
-    public List<Item> getItems() {
+    public Collection<Item> getItems() {
         return items;
     }
 
