@@ -5,10 +5,10 @@ public class Item {
     private final String code;
     private final String name;
     private final Unit unit;
-    private final Double price;
+    private final double price;
 
     public Item(
-            final String code, final String name, final Unit unit, final Double price
+            final String code, final String name, final Unit unit, final double price
     ) {
         this.code = code;
         this.name = name;
@@ -28,7 +28,7 @@ public class Item {
         return unit;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -39,18 +39,21 @@ public class Item {
 
         Item item = (Item) o;
 
+        if (Double.compare(item.price, price) != 0) return false;
         if (!code.equals(item.code)) return false;
         if (!name.equals(item.name)) return false;
-        if (unit != item.unit) return false;
-        return price.equals(item.price);
+        return unit == item.unit;
     }
 
     @Override
     public int hashCode() {
-        int result = code.hashCode();
+        int result;
+        long temp;
+        result = code.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + unit.hashCode();
-        result = 31 * result + price.hashCode();
+        temp = Double.doubleToLongBits(price);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 }

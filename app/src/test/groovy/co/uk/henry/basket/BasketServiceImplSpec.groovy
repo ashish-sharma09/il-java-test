@@ -11,6 +11,9 @@ class BasketServiceImplSpec extends spock.lang.Specification {
         basketService.add(null, 1)
 
         then: "An illegal argument exception is reported"
-        thrown(IllegalArgumentException)
+        def exception = thrown(IllegalArgumentException)
+
+        and: "Appropriate error message exists"
+        exception.message == "An item cannot be null"
     }
 }
