@@ -103,7 +103,7 @@ class UserBasketIntegrationSpec extends Specification {
         basket.totalCost == 0.45D
     }
 
-    def "loaves of bread are half price when two tins of soup are bought for the applicable date"() {
+    def "loaves of bread are half price when two tins of soup are bought for the applicable date else no discount given"() {
         given: "All available products"
         def items = productService.getItems()
 
@@ -118,18 +118,45 @@ class UserBasketIntegrationSpec extends Specification {
         basketService.add(bread, 1)
 
         and: "basket fetched for tomorrow"
-        def basket = basketService.getBasketFor(Period.ofDays(1))
+        def basket = basketService.getBasketFor(Period.ofDays(days))
 
         then: "basket reflects the added item"
         basket.items == [soup, bread]
 
         and: "the total cost with 50% discount on loaf of bread"
-        basket.totalCost == 1.70D
+        basket.totalCost == expectedPrice
+
+        where:
+        days | expectedPrice
+        1    | 1.70D
+        45   | 2.10D
     }
-    // TODO - test for outside date
+
+    def "2 loaves of bread are half price when three tins of soup are bought for the applicable date"() {
+        given: "All available products"
+        def items = productService.getItems()
+
+        and: "soup tin and bread to be added"
+        def soup = items.find {it.name == "soup"}
+        def bread = items.find {it.name == "bread"}
+
+        when: "2 tins of soup are added"
+        basketService.add(soup, 3)
+
+        and: "one loaf of bread is added"
+        basketService.add(bread, 2)
+
+        and: "basket fetched for tomorrow"
+        def basket = basketService.getBasketFor(Period.ofDays(0))
+
+        then: "basket reflects the added item"
+        basket.items == [soup, bread]
+
+        and: "the total cost with 50% discount on loaf of bread"
+        basket.totalCost == 3.15D
+    }
 
     private double truncatedToTwoDecimalPlaces(double price) {
         Double.parseDouble(new DecimalFormat("#.##").format(price))
     }
-
 }
