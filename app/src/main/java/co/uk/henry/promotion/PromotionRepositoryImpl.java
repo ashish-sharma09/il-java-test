@@ -35,10 +35,8 @@ public class PromotionRepositoryImpl implements PromotionRepository {
                     Files.newBufferedReader(promotionsFilePath),
                     new TypeToken<ArrayList<Promotion>>(){}.getType()
             );
-
         } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            throw new RuntimeException(ex);
         }
     }
 

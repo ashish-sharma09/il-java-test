@@ -1,5 +1,6 @@
 package co.uk.henry.promotion
 
+import com.google.gson.JsonSyntaxException
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -58,5 +59,20 @@ class PromotionRepositoryImplSpec extends Specification {
                         new ValidityPeriod(Period.parse("P3D"), Period.parse("P1M"))
                 )
         ]
+    }
+
+    def "Error during file parsing is thrown as a RuntimeException"() {
+        given: "a promotions json file containing promotions"
+        def jsonFilePath = Paths.get(
+                this.class.classLoader.getResource("incorrect-promotions.json").toURI()
+        )
+        promotionRepository = new PromotionRepositoryImpl(jsonFilePath)
+
+        when: "promotions are fetched"
+        promotionRepository.getPromotions()
+
+        then: "exception is thrown"
+        def runtimeException = thrown(RuntimeException)
+        runtimeException instanceof JsonSyntaxException
     }
 }
