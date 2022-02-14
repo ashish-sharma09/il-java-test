@@ -34,4 +34,8 @@ public class Promotion {
     public Discount getDiscount() {
         return discount;
     }
+
+    public ValidityPeriod getValidityPeriod() {
+        return validityPeriod;
+    }
 }

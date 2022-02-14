@@ -6,6 +6,7 @@ import co.uk.henry.model.Unit
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.LocalDate
 import java.time.Period
 
 class PromotionServiceImplSpec extends Specification {
@@ -21,7 +22,7 @@ class PromotionServiceImplSpec extends Specification {
     @Unroll
     def "throw error when given basket items is #items"() {
         when: "basket items is null"
-        promotionService.getApplicableTotalDiscountFor(items)
+        promotionService.getApplicableTotalDiscountFor(items, LocalDate.now())
 
         then:
         thrown(IllegalArgumentException)
@@ -42,7 +43,7 @@ class PromotionServiceImplSpec extends Specification {
         promotionRepository.getPromotions() >> []
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "cost is unchanged"
         applicableDiscounts == 0.0
@@ -56,11 +57,11 @@ class PromotionServiceImplSpec extends Specification {
 
         and: "an applicable promotion in the repository"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D")))
+                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D")))
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == 0.40
@@ -74,11 +75,12 @@ class PromotionServiceImplSpec extends Specification {
 
         and: "an applicable promotion in the repository"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D")))
+                new Promotion("P1", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new ValidityPeriod(
+                        Period.parse("P0D"), Period.parse("P2D")))
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == 2.0
@@ -92,12 +94,12 @@ class PromotionServiceImplSpec extends Specification {
 
         and: "an applicable promotion with other promotions in the repository"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D"))),
-                new Promotion("P2", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 5), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D")))
+                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))),
+                new Promotion("P2", "1", new Quantity(1), new Discount(DiscountUnit.PERCENT, 5), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D")))
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == 0.2
@@ -111,11 +113,11 @@ class PromotionServiceImplSpec extends Specification {
 
         and: "an applicable promotion in the repository with min quantity #promotionMinQuantity"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "1", new Quantity(promotionMinQuantity), new Discount(DiscountUnit.PERCENT, 5), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D")))
+                new Promotion("P1", "1", new Quantity(promotionMinQuantity), new Discount(DiscountUnit.PERCENT, 5), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D")))
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == appliedDiscount
@@ -136,18 +138,18 @@ class PromotionServiceImplSpec extends Specification {
 
         and: "two applicable promotions"
         promotionRepository.getPromotions() >> [
-                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D"))),
-                new Promotion("P2", "3", new Quantity(1), new Discount(DiscountUnit.PERCENT, 5), new co.uk.henry.promotion.ValidityPeriod(java.time.Period.parse("P0D"), java.time.Period.parse("P2D")))
+                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D"))),
+                new Promotion("P2", "3", new Quantity(1), new Discount(DiscountUnit.PERCENT, 5), new ValidityPeriod(Period.parse("P0D"), Period.parse("P2D")))
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == 0.8
     }
 
-    def "promotion valid from yesterday to next 7 days is applied"() {
+    def "promotion valid from yesterday to next 7 days is applied when basket date falls within this period"() {
         given: "multiple items in the basket with single quantity"
         List<BasketItem> basketItems = [
                 new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1)
@@ -160,7 +162,7 @@ class PromotionServiceImplSpec extends Specification {
         ]
 
         when: "fetching cost with applied discounts"
-        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems, LocalDate.now())
 
         then: "applied discount is returned"
         applicableDiscounts == 0.8
