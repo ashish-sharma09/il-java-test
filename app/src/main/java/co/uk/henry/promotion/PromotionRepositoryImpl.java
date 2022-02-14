@@ -19,6 +19,7 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public PromotionRepositoryImpl(final Path promotionsFilePath) {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(ValidityPeriod.class, new ValidityPeriodDeserializer())
+                .registerTypeAdapter(Quantity.class, new QuantityDeserializer())
                 .create();
 
         if (promotionsFilePath.toFile().exists()) {
@@ -53,6 +54,22 @@ public class PromotionRepositoryImpl implements PromotionRepository {
             }
 
             return new ValidityPeriod(Period.parse(validFrom), Period.parse(validTo));
+        }
+    }
+
+    private static class QuantityDeserializer implements JsonDeserializer<Quantity> {
+        @Override
+        public Quantity deserialize(
+                JsonElement json, Type typeOfT, JsonDeserializationContext context
+        ) throws JsonParseException {
+            final int minQuantity = json.getAsJsonObject().get("minQuantity").getAsInt();
+            final JsonElement maxQuantityElementValue = json.getAsJsonObject().get("maxQuantity");
+
+            if (maxQuantityElementValue == null) {
+                return new Quantity(minQuantity);
+            }
+            final int maxQuantity = maxQuantityElementValue.getAsInt();
+            return new Quantity(minQuantity, maxQuantity);
         }
     }
 }

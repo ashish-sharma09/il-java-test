@@ -1,0 +1,19 @@
+[
+  {
+    "code": "P1",
+    "type": "MAIN",
+    "item": "1",
+    "quantity": {
+      "minQuantity": 1
+    },
+    "validityPeriod": {
+      "validFrom": "-P1D",
+      "validTo": "P7D"
+    },
+    "discount": {
+      "type": "MONEY",
+      "unit": "PERCENT",
+      "value": "10"
+    }
+  }
+]

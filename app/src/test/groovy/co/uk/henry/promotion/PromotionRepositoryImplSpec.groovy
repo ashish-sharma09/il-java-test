@@ -22,6 +22,24 @@ class PromotionRepositoryImplSpec extends Specification {
 
     def "A single promotion can be parsed and provided from the file"() {
         given: "a promotions json file"
+        def jsonFilePath = Paths.get(this.class.classLoader.getResource("promotions-with-no-max-quantity.json").toURI())
+        promotionRepository = new PromotionRepositoryImpl(jsonFilePath)
+
+        when: "promotions are fetched"
+        def promotions = promotionRepository.getPromotions()
+
+        then: "all promotions returned"
+        promotions == [
+                new Promotion (
+                        "P1", PromotionType.MAIN, "1",
+                        new Quantity(1), new Discount(DiscountType.MONEY, DiscountUnit.PERCENT, 10),
+                        new ValidityPeriod(Period.parse("-P1D"), Period.parse("P7D"))
+                )
+        ]
+    }
+
+    def "when max quantity is not given then max quantity is max integer"() {
+        given: "a promotions json file"
         def jsonFilePath = Paths.get(this.class.classLoader.getResource("promotions-1.json").toURI())
         promotionRepository = new PromotionRepositoryImpl(jsonFilePath)
 
