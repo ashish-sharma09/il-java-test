@@ -123,4 +123,25 @@ class PromotionServiceImplSpec extends Specification {
         1                  | 2                    | 0.0
         2                  | 2                    | 0.4
     }
+
+    def "multiple promotions are applied for all items with matching quantity of items in the basket"() {
+        given: "multiple items in the basket with single quantity"
+        List<BasketItem> basketItems = [
+                new BasketItem(new Item("1","someName", Unit.SINGLE, 4.00), 1),
+                new BasketItem(new Item("2","someName", Unit.TIN, 5.00), 1),
+                new BasketItem(new Item("3","someName", Unit.BOTTLE, 6.00), 1),
+        ]
+
+        and: "two applicable promotions"
+        promotionRepository.getPromotions() >> [
+                new Promotion("P1", "2", new Quantity(1), new Discount(DiscountUnit.PERCENT, 10)),
+                new Promotion("P2", "3", new Quantity(1), new Discount(DiscountUnit.PERCENT, 5))
+        ]
+
+        when: "fetching cost with applied discounts"
+        def applicableDiscounts = promotionService.getApplicableTotalDiscountFor(basketItems)
+
+        then: "applied discount is returned"
+        applicableDiscounts == 0.8
+    }
 }

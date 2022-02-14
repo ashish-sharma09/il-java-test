@@ -2,7 +2,10 @@ package co.uk.henry.promotion;
 
 import co.uk.henry.model.BasketItem;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 public class PromotionServiceImpl implements PromotionService {
 
@@ -24,23 +27,21 @@ public class PromotionServiceImpl implements PromotionService {
             return 0;
         }
 
-        // filter promotion applicable to the item
-        final List<Promotion> applicablePromotions = promotions.stream()
-                .filter(promotion ->
-                        items.stream().anyMatch(basketItem ->
-                                basketItem.getItem().getCode().equals(promotion.getItemCode())
-                                        &&
-                                        promotion.getQuantity().appliesTo(basketItem.getQuantity())
-                        )
-                )
-                .collect(Collectors.toList());
+        final Map<BasketItem, List<Promotion>> itemToPromotions = items.stream()
+                .map(item ->
+                    Map.entry(item, promotions.stream()
+                        .filter(promotion ->
+                            promotion.getItemCode().equals(item.getItem().getCode())
+                            &&
+                            promotion.getQuantity().appliesTo(item.getQuantity())
+                        ).collect(Collectors.toList())
+                    )
+                ).collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        final BasketItem basketItem = items.get(0);
-
-        return applicablePromotions.stream()
-                .map(Promotion::getDiscount)
-                .mapToDouble(
-                        discount -> discount.applyTo(basketItem.price())
-                ).sum();
+        return itemToPromotions.entrySet().stream()
+            .mapToDouble(entry ->
+                entry.getValue().stream()
+                    .mapToDouble(promo -> promo.getDiscount().applyTo(entry.getKey().price())).sum()
+            ).sum();
     }
 }
