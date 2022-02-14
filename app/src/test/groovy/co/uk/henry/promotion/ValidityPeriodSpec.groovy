@@ -39,4 +39,15 @@ class ValidityPeriodSpec extends Specification {
         then:
         isValid
     }
+
+    def "true when given date is next month and validity is from 3 days to end of next month"() {
+        given: "period with validity of 5 days"
+        ValidityPeriod validityPeriod = new ValidityPeriod(Period.parse("P3D"), Period.parse("P1M"))
+
+        when:
+        def isValid = validityPeriod.isValidFor(LocalDate.now().plusMonths(1))
+
+        then:
+        isValid
+    }
 }
