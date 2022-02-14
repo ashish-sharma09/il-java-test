@@ -66,3 +66,8 @@ testing {
 tasks.named('check') {
     dependsOn(testing.suites.integration)
 }
+
+application {
+    // Define the main class for the application.
+    mainClass = 'co.uk.henry.Application'
+}

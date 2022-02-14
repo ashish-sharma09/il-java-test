@@ -1,6 +1,10 @@
 package co.uk.henry.model;
 
+import java.text.DecimalFormat;
+
 public class Item {
+
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.00");
 
     private final String code;
     private final String name;
@@ -30,6 +34,10 @@ public class Item {
 
     public double getPrice() {
         return price;
+    }
+
+    public String getDisplayPrice() {
+        return DECIMAL_FORMAT.format(price);
     }
 
     @Override

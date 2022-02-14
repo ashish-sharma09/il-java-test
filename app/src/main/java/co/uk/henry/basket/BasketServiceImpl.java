@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 public class BasketServiceImpl implements BasketService {
 
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+
     private final List<BasketItem> items;
     private final PromotionService promotionService;
-
-    private DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     public BasketServiceImpl(final PromotionService promotionService) {
         this.promotionService = promotionService;
