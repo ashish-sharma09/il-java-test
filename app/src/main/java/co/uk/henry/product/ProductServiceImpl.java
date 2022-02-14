@@ -5,7 +5,6 @@ import co.uk.henry.model.Item;
 import java.util.List;
 
 public class ProductServiceImpl implements ProductService {
-
     private final ProductRepository productRepository;
 
     public ProductServiceImpl(final ProductRepository productRepository) {
@@ -14,6 +13,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Item> getItems() {
-        return productRepository.getProducts();
+        try {
+            return productRepository.getProducts();
+        } catch(Exception exception) {
+            throw new ProductServiceException("Error from product repository", exception);
+        }
     }
 }
