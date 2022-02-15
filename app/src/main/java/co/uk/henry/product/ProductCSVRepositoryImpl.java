@@ -42,7 +42,6 @@ public class ProductCSVRepositoryImpl implements ProductRepository {
 
             return parsedItems;
         } catch (final IOException | CsvException ioException) {
-            // TODO - add logging
             throw new RuntimeException("Error while reading all items from CSV file", ioException);
         }
     }
