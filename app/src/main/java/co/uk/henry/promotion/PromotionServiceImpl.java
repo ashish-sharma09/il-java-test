@@ -41,12 +41,12 @@ public class PromotionServiceImpl implements PromotionService {
         return itemToPromotions.entrySet().stream()
                 .filter(entry -> isMainPromotionOrSubPromotionWithMain(entry, allShortlistedPromos))
                 .mapToDouble(entry ->
-                        entry.getValue().stream()
-                                .mapToDouble(promo ->
-                                        promo.appliedDiscountTo(
-                                                entry.getKey().priceFor(min(entry.getKey().getQuantity(), promo.maxApplicableQuantity()))
-                                        )
-                                ).sum()
+                    entry.getValue().stream()
+                        .mapToDouble(promo ->
+                            promo.appliedDiscountTo(
+                                entry.getKey().priceFor(min(entry.getKey().getQuantity(), promo.maxApplicableQuantity()))
+                            )
+                        ).sum()
                 ).sum();
     }
 
@@ -54,18 +54,18 @@ public class PromotionServiceImpl implements PromotionService {
             Map.Entry<BasketItem, List<Promotion>> entry, List<Promotion> allShortlistedPromos
     ) {
         return entry.getValue().stream()
-                .anyMatch(promotion ->
-                        promotion.isMain()
-                                ||
-                                (promotion.isSub() && allShortlistedPromos.stream().anyMatch(Promotion::isMain))
-                );
+            .anyMatch(promotion ->
+                promotion.isMain()
+                ||
+                (promotion.isSub() && allShortlistedPromos.stream().anyMatch(Promotion::isMain))
+            );
     }
 
     private List<Promotion> applicablePromotions(
-            BasketItem item, LocalDate basketDate, List<Promotion> promotions
+        BasketItem item, LocalDate basketDate, List<Promotion> promotions
     ) {
         return promotions.stream()
-                .filter(promotion -> promotion.isApplicableTo(item, basketDate))
-                .collect(Collectors.toList());
+            .filter(promotion -> promotion.isApplicableTo(item, basketDate))
+            .collect(Collectors.toList());
     }
 }
