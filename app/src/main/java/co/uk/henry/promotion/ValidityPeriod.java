@@ -18,16 +18,16 @@ public class ValidityPeriod {
 
     public boolean isValidFor(final LocalDate date) {
         return
-                date.isAfter(toDate(validFrom.minusDays(1)))
-                        &&
-                        date.isBefore(toDate(validTo.plusDays(1)));
+            date.isAfter(toDate(validFrom.minusDays(1)))
+            &&
+            date.isBefore(toDate(validTo.plusDays(1)));
     }
 
     private LocalDate toDate(Period period) {
         final LocalDate localDate =
-                LocalDate.now()
-                        .plusDays(period.getDays())
-                        .plusYears(period.getYears());
+            LocalDate.now()
+            .plusDays(period.getDays())
+            .plusYears(period.getYears());
 
         if (period.getMonths() != 0) {
             return localDate.plusMonths(period.getMonths()).with(TemporalAdjusters.lastDayOfMonth());

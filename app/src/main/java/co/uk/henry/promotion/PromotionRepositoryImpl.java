@@ -18,9 +18,9 @@ public class PromotionRepositoryImpl implements PromotionRepository {
 
     public PromotionRepositoryImpl(final Path promotionsFilePath) {
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(ValidityPeriod.class, new ValidityPeriodDeserializer())
-                .registerTypeAdapter(Quantity.class, new QuantityDeserializer())
-                .create();
+            .registerTypeAdapter(ValidityPeriod.class, new ValidityPeriodDeserializer())
+            .registerTypeAdapter(Quantity.class, new QuantityDeserializer())
+            .create();
 
         if (promotionsFilePath.toFile().exists()) {
             this.promotionsFilePath = promotionsFilePath;
@@ -33,8 +33,8 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public List<Promotion> getPromotions() {
         try {
             return this.gson.fromJson(
-                    Files.newBufferedReader(promotionsFilePath),
-                    new TypeToken<ArrayList<Promotion>>(){}.getType()
+                Files.newBufferedReader(promotionsFilePath),
+                new TypeToken<ArrayList<Promotion>>(){}.getType()
             );
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -44,7 +44,7 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     private static class ValidityPeriodDeserializer implements JsonDeserializer<ValidityPeriod> {
         @Override
         public ValidityPeriod deserialize(
-                JsonElement json, Type typeOfT, JsonDeserializationContext context
+            JsonElement json, Type typeOfT, JsonDeserializationContext context
         ) throws JsonParseException {
             final String validFrom = json.getAsJsonObject().get("validFrom").getAsString();
             final String validTo = json.getAsJsonObject().get("validTo").getAsString();
@@ -60,7 +60,7 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     private static class QuantityDeserializer implements JsonDeserializer<Quantity> {
         @Override
         public Quantity deserialize(
-                JsonElement json, Type typeOfT, JsonDeserializationContext context
+            JsonElement json, Type typeOfT, JsonDeserializationContext context
         ) throws JsonParseException {
             final int minQuantity = json.getAsJsonObject().get("minQuantity").getAsInt();
             final JsonElement maxQuantityElementValue = json.getAsJsonObject().get("maxQuantity");
